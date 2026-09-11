@@ -55,11 +55,6 @@
 
         <div class="flex items-center justify-center gap-4 text-xs sm:text-sm text-slate-400 pt-2 flex-wrap font-semibold">
             <span>{{ $publishedDate }}</span>
-            <span>&bull;</span>
-            <span class="flex items-center gap-1 text-[#06B6D4]">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                {{ $readTime }} min read
-            </span>
             @if($viewsCount > 0)
                 <span>&bull;</span>
                 <span class="flex items-center gap-1">
@@ -105,7 +100,7 @@
 
         <!-- Main Body (8 cols) -->
         <div class="lg:col-span-8 space-y-10">
-            <div class="prose">
+            <div id="blog-article-content" class="prose prose-content max-w-none">
                 {!! $blog['content'] ?? '' !!}
             </div>
 
@@ -186,6 +181,17 @@
                             <textarea name="comment" rows="4" required placeholder="Drop your creator insights or take on this topic..." class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#DC2626]"></textarea>
                         </div>
 
+                        <!-- Math Security Captcha -->
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Security Check:</span>
+                                <span id="comment-captcha-text" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
+                                    {{ $captchaQuestion ?? '5 + 3' }} = ?
+                                </span>
+                            </div>
+                            <input type="number" name="captcha" required placeholder="Answer" class="w-28 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#DC2626]">
+                        </div>
+
                         <button type="submit" id="comment-submit-btn" class="px-6 py-3 rounded-2xl font-bold text-sm bg-gradient-to-r from-[#DC2626] to-[#06B6D4] text-white shadow-md hover:scale-105 transition-all inline-flex items-center gap-2">
                             <span>Post Comment</span>
                         </button>
@@ -217,13 +223,28 @@
         </div>
 
         <!-- Sidebar Column (3 cols) -->
-        <aside class="lg:col-span-3 space-y-8">
-            <!-- Creator Dare Challenge Widget -->
-            <div class="p-6 rounded-3xl bg-gradient-to-br from-[#0F172A] to-[#080C14] border border-slate-800 text-white shadow-lg space-y-4">
-                <span class="text-3xl">⚡</span>
-                <h4 class="text-base font-black text-white leading-tight">
-                    Dare Your Squad
-                </h4>
+        <aside class="lg:col-span-3">
+            <div class="lg:sticky lg:top-28 space-y-6">
+                <!-- On This Page Table of Contents Widget -->
+                <div id="table-of-contents-wrapper" class="rounded-3xl bg-white dark:bg-[#0F172A] p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#DC2626] ring-4 ring-red-500/20"></span>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">On This Page</h4>
+                        </div>
+                        <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-[#DC2626] dark:text-[#06B6D4]">Quick Nav</span>
+                    </div>
+                    <ul id="table-of-contents-list" class="space-y-1 max-h-[300px] overflow-y-auto scroll-smooth pr-1 text-sm border-l-2 border-slate-100 dark:border-slate-800 pl-2">
+                        <!-- Dynamically generated TOC -->
+                    </ul>
+                </div>
+
+                <!-- Creator Dare Challenge Widget -->
+                <div class="p-6 rounded-3xl bg-gradient-to-br from-[#0F172A] to-[#080C14] border border-slate-800 text-white shadow-lg space-y-4">
+                    <span class="text-3xl">⚡</span>
+                    <h4 class="text-base font-black text-white leading-tight">
+                        Dare Your Squad
+                    </h4>
                 <p class="text-xs text-slate-300 leading-relaxed">
                     Test how well your collaborators, community, or friends truly know your creator tastes and habits!
                 </p>
@@ -263,6 +284,7 @@
 
             <!-- Sidebar Ad Placement -->
             <x-ad-banner placement="sidebar" />
+            </div>
         </aside>
 
     </div>
@@ -343,8 +365,20 @@
                             commentsCount.textContent = current + 1;
                         }
 
-                        form.querySelector('[name="comment"]').value = '';
+                        // Reset all input fields automatically
+                        form.reset();
+
+                        // Auto change captcha
+                        if (data.new_captcha) {
+                            const captchaEl = document.getElementById('comment-captcha-text');
+                            if (captchaEl) captchaEl.textContent = data.new_captcha + ' = ?';
+                        }
                     } else {
+                        // Auto change captcha on error too
+                        if (data.new_captcha) {
+                            const captchaEl = document.getElementById('comment-captcha-text');
+                            if (captchaEl) captchaEl.textContent = data.new_captcha + ' = ?';
+                        }
                         alertBox.className = 'p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-bold';
                         const errMsg = data.message || (data.errors ? Object.values(data.errors).flat()[0] : 'Failed to post comment.');
                         alertBox.textContent = errMsg;

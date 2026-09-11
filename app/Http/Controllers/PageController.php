@@ -26,17 +26,24 @@ class PageController extends Controller
 
     public function contactSubmit(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:150',
             'subject' => 'nullable|string|max:150',
             'message' => 'required|string|max:3000',
         ]);
 
+        $response = $this->client->submitContactMessage([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => $validated['subject'] ?? 'Collaboration Inquiry',
+            'message' => $validated['message'],
+        ]);
+
         $isSuccess = ($response['success'] ?? false) || (($response['status'] ?? 500) === 200);
-        $message = $isSuccess 
+        $message = $response['data']['message'] ?? ($isSuccess 
             ? 'Your message has been received! Our collaboration team will get back to you shortly.'
-            : ($response['data']['message'] ?? 'Unable to send message. Please try again.');
+            : 'Unable to send message. Please try again.');
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

@@ -20,10 +20,12 @@ class NewsletterController extends Controller
             'email' => 'required|email|max:150',
         ]);
 
+        $response = $this->client->submitSubscriber($request->input('email'));
+
         $isSuccess = ($response['success'] ?? false) || (($response['status'] ?? 500) === 200);
-        $message = $isSuccess 
-            ? ($response['data']['message'] ?? 'Thank you for subscribing to Creator Studio Insider!') 
-            : ($response['data']['message'] ?? 'Unable to subscribe at this moment. Please try again.');
+        $message = $response['data']['message'] ?? ($isSuccess 
+            ? 'Thank you for subscribing to Creator Studio Insider!' 
+            : 'Unable to subscribe at this moment. Please try again.');
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

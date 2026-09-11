@@ -126,3 +126,14 @@
     margin-bottom: 0.5em;
     line-height: 1.7;
 }
+
+#table-of-contents-list::-webkit-scrollbar {
+    width: 3px;
+}
+#table-of-contents-list::-webkit-scrollbar-thumb {
+    background: rgba(150, 150, 150, 0.3);
+    border-radius: 4px;
+}
+#table-of-contents-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 38, 38, 0.6);
+}

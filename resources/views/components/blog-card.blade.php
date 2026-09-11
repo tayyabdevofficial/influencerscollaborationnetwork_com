@@ -27,12 +27,6 @@
         <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#DC2626] text-white shadow-md">
             {{ $categoryName }}
         </span>
-
-        <!-- Reading Time Pill -->
-        <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20 flex items-center gap-1">
-            <svg class="w-3 h-3 text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            {{ $readingTime }} min read
-        </span>
     </a>
 
     <!-- Card Body -->

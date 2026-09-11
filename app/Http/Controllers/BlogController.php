@@ -22,6 +22,10 @@ class BlogController extends Controller
             abort(404, 'Article not found');
         }
 
+        $num1 = rand(3, 9);
+        $num2 = rand(1, 8);
+        session(['comment_captcha' => $num1 + $num2]);
+
         return view('blog-detail', [
             'blog' => $data['blog'],
             'comments' => $data['comments'] ?? [],
@@ -29,6 +33,7 @@ class BlogController extends Controller
             'nextBlog' => $data['nextBlog'] ?? null,
             'prevBlog' => $data['prevBlog'] ?? null,
             'metaTags' => $data['metaTags'] ?? '',
+            'captchaQuestion' => "{$num1} + {$num2}",
         ]);
     }
 
@@ -41,14 +46,38 @@ class BlogController extends Controller
             'email' => 'required|email|max:150',
             'description' => 'nullable|string|max:2000',
             'comment' => 'nullable|string|max:2000',
+            'captcha' => 'required|numeric',
         ]);
+
+        $expectedCaptcha = session('comment_captcha');
+        
+        // Always generate next fresh captcha
+        $nextNum1 = rand(3, 9);
+        $nextNum2 = rand(1, 8);
+        session(['comment_captcha' => $nextNum1 + $nextNum2]);
+        $newCaptcha = "{$nextNum1} + {$nextNum2}";
+
+        if ((int)$request->input('captcha') !== (int)$expectedCaptcha) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Incorrect security captcha answer. Please calculate correctly.',
+                    'new_captcha' => $newCaptcha,
+                ], 422);
+            }
+            return back()->with('error', 'Incorrect security captcha answer.');
+        }
 
         $fullName = $request->input('full_name') ?: $request->input('name');
         $desc = $request->input('description') ?: $request->input('comment');
 
         if (empty($fullName) || empty($desc)) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Name and comment are required.'], 422);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Name and comment are required.',
+                    'new_captcha' => $newCaptcha,
+                ], 422);
             }
             return back()->with('error', 'Name and comment are required.');
         }
@@ -66,6 +95,7 @@ class BlogController extends Controller
             return response()->json([
                 'success' => $isSuccess,
                 'message' => $isSuccess ? 'Your comment has been posted successfully!' : ($response['data']['message'] ?? 'Unable to submit comment.'),
+                'new_captcha' => $newCaptcha,
                 'comment' => [
                     'full_name' => $fullName,
                     'name' => $fullName,
