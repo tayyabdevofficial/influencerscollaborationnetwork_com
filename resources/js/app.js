@@ -100,9 +100,12 @@ window.toggleMobileAccordion = function (id, btn) {
     const el = document.getElementById(id);
     const icon = btn?.querySelector('svg');
     if (el) {
-        el.classList.toggle('hidden');
+        const isHidden = el.classList.toggle('hidden');
+        if (btn) {
+            btn.setAttribute('aria-expanded', !isHidden ? 'true' : 'false');
+        }
         if (icon) {
-            icon.classList.toggle('rotate-180');
+            icon.classList.toggle('rotate-180', !isHidden);
         }
     }
 };

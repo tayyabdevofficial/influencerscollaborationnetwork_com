@@ -13,7 +13,7 @@
                        required 
                        placeholder="Search creator stories, viral tips, collab guides..."
                        class="w-full bg-transparent text-base sm:text-lg font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none">
-                <button type="button" onclick="window.closeSearchModal()" class="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <button type="button" onclick="window.closeSearchModal()" aria-label="Close search" class="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
