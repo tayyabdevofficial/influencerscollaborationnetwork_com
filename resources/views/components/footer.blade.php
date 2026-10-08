@@ -5,7 +5,10 @@
             <!-- Brand Column -->
             <div class="lg:col-span-2 space-y-4">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <img src="{{ asset('logo.png') }}" alt="{{ config('site.name') }}" class="h-10 w-auto">
+                    <picture>
+                        <source srcset="{{ asset('logo.webp') }}" type="image/webp">
+                        <img src="{{ asset('logo.png') }}" alt="{{ config('site.name') }}" width="40" height="40" loading="lazy" decoding="async" class="h-10 w-auto">
+                    </picture>
                     <div>
                         <span class="font-extrabold text-white text-base tracking-tight block">Influencers Collaboration</span>
                         <span class="text-xs text-[#06B6D4] font-semibold uppercase tracking-wider block">Network</span>

@@ -67,7 +67,7 @@
 
     <!-- Featured Cover Image -->
     <div class="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl bg-slate-950 aspect-[16/9] border border-slate-200 dark:border-slate-800">
-        <img src="{{ $imageUrl }}" alt="{{ $title }}" class="w-full h-full object-cover">
+        <img src="{{ $imageUrl }}" alt="{{ $title }}" fetchpriority="high" decoding="async" width="1150" height="647" class="w-full h-full object-cover">
     </div>
 
     <!-- Top Article Ad Banner -->

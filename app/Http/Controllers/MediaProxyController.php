@@ -23,14 +23,14 @@ class MediaProxyController extends Controller
         }
 
         $cacheDir = storage_path('app/public/blogger_media');
-        $cachePath = $cacheDir . '/' . $token;
+        $cachePath = $cacheDir . '/' . md5($token . '_v2_q75') . '.webp';
 
         // Check local cache on disk
         if (File::exists($cachePath)) {
             $mimeType = File::mimeType($cachePath) ?: 'image/webp';
             return response()->file($cachePath, [
                 'Content-Type' => $mimeType,
-                'Cache-Control' => 'public, max-age=2592000, immutable',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
             ]);
         }
 
@@ -41,19 +41,40 @@ class MediaProxyController extends Controller
             return redirect('/images/placeholder.svg');
         }
 
-        // Cache locally
+        // Cache locally with GD WebP compression (quality 75)
+        $isWebpSaved = false;
         try {
             if (!File::isDirectory($cacheDir)) {
                 File::makeDirectory($cacheDir, 0755, true);
             }
-            File::put($cachePath, $stream['body']);
+
+            if (function_exists('imagecreatefromstring') && function_exists('imagewebp') && !str_contains($stream['contentType'] ?? '', 'svg')) {
+                $img = @imagecreatefromstring($stream['body']);
+                if ($img !== false) {
+                    imagepalettetotruecolor($img);
+                    imagealphablending($img, true);
+                    imagesavealpha($img, true);
+                    if (@imagewebp($img, $cachePath, 75)) {
+                        if (filesize($cachePath) < strlen($stream['body'])) {
+                            $isWebpSaved = true;
+                        } else {
+                            File::put($cachePath, $stream['body']);
+                        }
+                    }
+                    imagedestroy($img);
+                }
+            }
+
+            if (!$isWebpSaved && !File::exists($cachePath)) {
+                File::put($cachePath, $stream['body']);
+            }
         } catch (\Throwable $e) {
             // Ignore write errors and stream anyway
         }
 
-        return response($stream['body'], 200, [
-            'Content-Type' => $stream['contentType'] ?? 'image/webp',
-            'Cache-Control' => 'public, max-age=2592000, immutable',
+        return response()->file($cachePath, [
+            'Content-Type' => $isWebpSaved ? 'image/webp' : ($stream['contentType'] ?? 'image/webp'),
+            'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
     }
 }

@@ -9,9 +9,15 @@
                 <!-- Brand Logo -->
                 <div class="flex items-center gap-3 shrink-0">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                        <img src="{{ asset('logo.png') }}" 
-                             alt="{{ config('site.name') }}" 
-                             class="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                        <picture class="shrink-0">
+                            <source srcset="{{ asset('logo.webp') }}" type="image/webp">
+                            <img src="{{ asset('logo.png') }}" 
+                                 alt="{{ config('site.name') }}" 
+                                 width="40"
+                                 height="40"
+                                 fetchpriority="high"
+                                 class="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                        </picture>
                         <div class="hidden sm:block">
                             <span class="text-[11px] font-black tracking-widest text-[#DC2626] uppercase block">Creator Network</span>
                             <span class="text-[10px] font-bold text-slate-400 block -mt-0.5">Collab &amp; Influence</span>

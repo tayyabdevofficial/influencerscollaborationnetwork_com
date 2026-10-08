@@ -5,7 +5,10 @@
     <div class="relative w-full h-[380px] sm:h-[460px] lg:h-[500px]" id="slider-slides-container">
         @foreach($blogs as $index => $blog)
             @php
-                $imageUrl = blogger_media_url($blog['image'] ?? $blog['image_url'] ?? null);
+                $mainImage1150 = !empty($blog['image_1150x900']) ? blogger_media_url($blog['image_1150x900']) : null;
+                $mainImage850  = !empty($blog['image_850x500']) ? blogger_media_url($blog['image_850x500']) : null;
+                $mainImage500  = !empty($blog['image_500x500']) ? blogger_media_url($blog['image_500x500']) : (!empty($blog['image_400x300']) ? blogger_media_url($blog['image_400x300']) : null);
+                $imageUrl = $mainImage850 ?: ($mainImage1150 ?: blogger_media_url($blog['image'] ?? $blog['image_url'] ?? null));
                 $categoryName = $blog['category']['name'] ?? $blog['category_name'] ?? 'Spotlight';
                 $slug = $blog['slug'] ?? '#';
                 $title = $blog['title'] ?? '';
@@ -13,7 +16,21 @@
                 $viewsCount = $blog['views_count'] ?? (is_array($blog['views'] ?? null) ? count($blog['views']) : ($blog['views'] ?? 0));
             @endphp
             <div class="slider-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}">
-                <img src="{{ $imageUrl }}" alt="{{ $title }}" class="w-full h-full object-cover">
+                <picture class="absolute inset-0 w-full h-full">
+                    @if($mainImage500)
+                        <source media="(max-width: 640px)" srcset="{{ $mainImage500 }}">
+                    @endif
+                    @if($mainImage850)
+                        <source media="(max-width: 1024px)" srcset="{{ $mainImage850 }}">
+                    @endif
+                    <img src="{{ $imageUrl }}" 
+                         alt="{{ $title }}" 
+                         @if($index === 0) fetchpriority="high" @else loading="lazy" @endif 
+                         decoding="async" 
+                         width="1150" 
+                         height="500" 
+                         class="w-full h-full object-cover">
+                </picture>
                 <!-- Dual Legibility Scrims -->
                 <div class="absolute inset-0 bg-gradient-to-t from-[#080C14] via-[#080C14]/70 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-[#080C14]/90 via-[#080C14]/40 to-transparent"></div>
