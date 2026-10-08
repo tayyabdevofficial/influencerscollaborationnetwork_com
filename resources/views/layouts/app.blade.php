@@ -18,16 +18,123 @@
             $headScript = $websiteAds['head_script'] ?? '';
             $ampHeadScript = $websiteAds['amp_head_script'] ?? '';
         @endphp
-        @if(!empty($headScript))
-            <script>
-                (function() {
-                    // Bypass third-party ad execution during synthetic Lighthouse/PageSpeed audits
-                    if (navigator.userAgent.indexOf('Chrome-Lighthouse') !== -1 || 
-                        navigator.userAgent.indexOf('Lighthouse') !== -1 || 
-                        window.navigator.webdriver) {
-                        return;
-                    }
 
+        <style>
+            /* Critical CSS: Initially collapsed to ZERO space on screen */
+            .ad-slot-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: 0 !important;
+                min-height: 0 !important;
+                max-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                border: none !important;
+                clear: both;
+            }
+
+            .ad-slot-wrapper .ad-slot-inner {
+                height: 0 !important;
+                max-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* Revealed smoothly ONLY once verified filled by Google AdSense */
+            .ad-slot-wrapper.ad-slot-filled {
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                margin-top: 1.25rem !important;
+                margin-bottom: 1.25rem !important;
+                overflow: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                transition: opacity 0.35s ease-in;
+            }
+
+            .ad-slot-wrapper.ad-slot-filled .ad-slot-inner {
+                height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+
+            /* Unfilled slots stay permanently hidden with 0 space */
+            .ad-slot-wrapper.ad-slot-unfilled,
+            ins.adsbygoogle[data-ad-status="unfilled"],
+            [data-ad-placement]:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+                display: none !important;
+            }
+        </style>
+
+        <script>
+            (function() {
+                // Monitor all ad slots and reveal ONLY when confirmed filled
+                function monitorAdSlots() {
+                    var slots = document.querySelectorAll('[data-ad-placement]');
+                    if (!slots.length) return;
+
+                    slots.forEach(function(slot) {
+                        var ins = slot.querySelector('ins.adsbygoogle');
+                        if (!ins) {
+                            // Non-AdSense custom direct banner: reveal immediately
+                            revealSlot(slot);
+                            return;
+                        }
+
+                        function revealSlot() {
+                            if (slot.classList.contains('ad-slot-filled')) return;
+                            slot.classList.remove('ad-slot-unfilled');
+                            slot.classList.add('ad-slot-filled');
+                            slot.removeAttribute('style');
+                            var inner = slot.querySelector('.ad-slot-inner') || slot.firstElementChild;
+                            if (inner) inner.removeAttribute('style');
+                            var label = slot.querySelector('.ad-label');
+                            if (label) label.classList.remove('hidden');
+                        }
+
+                        function collapseSlot() {
+                            if (slot.classList.contains('ad-slot-filled')) return;
+                            slot.classList.add('ad-slot-unfilled');
+                            slot.style.display = 'none';
+                        }
+
+                        function checkStatus() {
+                            var status = ins.getAttribute('data-ad-status');
+                            var iframe = ins.querySelector('iframe');
+                            if (status === 'filled') {
+                                revealSlot();
+                            } else if (iframe && (iframe.clientHeight > 20 || iframe.offsetHeight > 20)) {
+                                revealSlot();
+                            } else if (status === 'unfilled') {
+                                collapseSlot();
+                            }
+                        }
+
+                        var observer = new MutationObserver(checkStatus);
+                        observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'], childList: true, subtree: true });
+                        checkStatus();
+
+                        setTimeout(function() {
+                            checkStatus();
+                            if (!slot.classList.contains('ad-slot-filled')) {
+                                collapseSlot();
+                            }
+                        }, 5000);
+                    });
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', monitorAdSlots);
+                } else {
+                    monitorAdSlots();
+                }
+
+                @if(!empty($headScript))
                     var adsLoaded = false;
                     function loadAdSense() {
                         if (adsLoaded) return;
@@ -54,72 +161,6 @@
                             window.removeEventListener(evt, loadAdSense, { passive: true });
                         });
 
-                        // Re-run monitoring slots when ads script loads
-                        monitorAdSlots();
-                    }
-
-                    function monitorAdSlots() {
-                        var slots = document.querySelectorAll('[data-ad-placement]');
-                        if (!slots.length) return;
-
-                        slots.forEach(function(slot) {
-                            var ins = slot.querySelector('ins.adsbygoogle');
-                            if (!ins) {
-                                // Non-AdSense or custom direct ad: reveal immediately
-                                slot.classList.add('ad-slot-filled');
-                                var label = slot.querySelector('.ad-label');
-                                if (label) label.classList.remove('hidden');
-                                return;
-                            }
-
-                            function markFilled() {
-                                if (slot.classList.contains('ad-slot-filled')) return;
-                                slot.classList.remove('ad-slot-unfilled');
-                                slot.classList.add('ad-slot-filled');
-                                var label = slot.querySelector('.ad-label');
-                                if (label) label.classList.remove('hidden');
-                            }
-
-                            function markUnfilled() {
-                                if (slot.classList.contains('ad-slot-filled')) return;
-                                slot.classList.add('ad-slot-unfilled');
-                                slot.style.display = 'none';
-                            }
-
-                            function checkStatus() {
-                                var status = ins.getAttribute('data-ad-status');
-                                var iframe = ins.querySelector('iframe');
-                                
-                                if (status === 'filled') {
-                                    markFilled();
-                                } else if (iframe && (iframe.clientHeight > 20 || iframe.offsetHeight > 20)) {
-                                    markFilled();
-                                } else if (status === 'unfilled') {
-                                    markUnfilled();
-                                }
-                            }
-
-                            // 1. Observe attribute & child DOM additions inside <ins>
-                            var observer = new MutationObserver(checkStatus);
-                            observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'], childList: true, subtree: true });
-
-                            // 2. Initial check
-                            checkStatus();
-
-                            // 3. Safety timeout: if ad is still unfilled after 6s, mark unfilled so it never takes space
-                            setTimeout(function() {
-                                checkStatus();
-                                if (!slot.classList.contains('ad-slot-filled')) {
-                                    markUnfilled();
-                                }
-                            }, 6000);
-                        });
-                    }
-
-                    // Start monitoring immediately on DOM ready
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', monitorAdSlots);
-                    } else {
                         monitorAdSlots();
                     }
 
@@ -128,48 +169,10 @@
                         window.addEventListener(evt, loadAdSense, { passive: true, once: true });
                     });
 
-                    // Passive fallback timer
-                    setTimeout(loadAdSense, 5000);
-                })();
-            </script>
-            <style>
-                /* Initial state: zero vertical space on screen, but full width for AdSense calculations */
-                .ad-slot-wrapper {
-                    display: block !important;
-                    width: 100% !important;
-                    height: 0 !important;
-                    min-height: 0 !important;
-                    max-height: 0 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    overflow: hidden !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                    border: none !important;
-                    clear: both;
-                }
-
-                /* Reveal smoothly ONLY once the ad is verified filled with real content */
-                .ad-slot-wrapper.ad-slot-filled {
-                    height: auto !important;
-                    min-height: auto !important;
-                    max-height: none !important;
-                    margin-top: 1.25rem !important;
-                    margin-bottom: 1.25rem !important;
-                    overflow: visible !important;
-                    opacity: 1 !important;
-                    pointer-events: auto !important;
-                    transition: opacity 0.3s ease-in;
-                }
-
-                /* Instant CSS collapse for unfilled AdSense units */
-                .ad-slot-wrapper.ad-slot-unfilled,
-                ins.adsbygoogle[data-ad-status="unfilled"],
-                [data-ad-placement]:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
-                    display: none !important;
-                }
-            </style>
-        @endif
+                    setTimeout(loadAdSense, 4000);
+                @endif
+            })();
+        </script>
         {!! $ampHeadScript !!}
     @endif
 
