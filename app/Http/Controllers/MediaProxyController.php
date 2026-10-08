@@ -23,7 +23,7 @@ class MediaProxyController extends Controller
         }
 
         $cacheDir = storage_path('app/public/blogger_media');
-        $cachePath = $cacheDir . '/' . md5($token . '_v2_q75') . '.webp';
+        $cachePath = $cacheDir . '/' . md5($token . '_v3_opt70') . '.webp';
 
         // Check local cache on disk
         if (File::exists($cachePath)) {
@@ -41,7 +41,7 @@ class MediaProxyController extends Controller
             return redirect('/images/placeholder.svg');
         }
 
-        // Cache locally with GD WebP compression (quality 75)
+        // Cache locally with GD WebP compression (quality 70 - PageSpeed standard)
         $isWebpSaved = false;
         try {
             if (!File::isDirectory($cacheDir)) {
@@ -54,12 +54,23 @@ class MediaProxyController extends Controller
                     imagepalettetotruecolor($img);
                     imagealphablending($img, true);
                     imagesavealpha($img, true);
-                    if (@imagewebp($img, $cachePath, 75)) {
-                        if (filesize($cachePath) < strlen($stream['body'])) {
-                            $isWebpSaved = true;
-                        } else {
-                            File::put($cachePath, $stream['body']);
-                        }
+
+                    // Downscale if image width exceeds max layout requirement (1200px)
+                    $width = imagesx($img);
+                    $height = imagesy($img);
+                    $maxWidth = 1200;
+                    if ($width > $maxWidth && $height > 0) {
+                        $newHeight = (int) round(($height * $maxWidth) / $width);
+                        $resized = imagecreatetruecolor($maxWidth, $newHeight);
+                        imagealphablending($resized, false);
+                        imagesavealpha($resized, true);
+                        imagecopyresampled($resized, $img, 0, 0, 0, 0, $maxWidth, $newHeight, $width, $height);
+                        imagedestroy($img);
+                        $img = $resized;
+                    }
+
+                    if (@imagewebp($img, $cachePath, 70)) {
+                        $isWebpSaved = true;
                     }
                     imagedestroy($img);
                 }
