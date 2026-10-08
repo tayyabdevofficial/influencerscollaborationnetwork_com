@@ -105,10 +105,7 @@
 
                         function checkStatus() {
                             var status = ins.getAttribute('data-ad-status');
-                            var iframe = ins.querySelector('iframe');
                             if (status === 'filled') {
-                                revealSlot();
-                            } else if (iframe && (iframe.clientHeight > 20 || iframe.offsetHeight > 20)) {
                                 revealSlot();
                             } else if (status === 'unfilled') {
                                 collapseSlot();
@@ -116,12 +113,11 @@
                         }
 
                         var observer = new MutationObserver(checkStatus);
-                        observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'], childList: true, subtree: true });
+                        observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
                         checkStatus();
 
                         setTimeout(function() {
-                            checkStatus();
-                            if (!slot.classList.contains('ad-slot-filled')) {
+                            if (ins.getAttribute('data-ad-status') !== 'filled') {
                                 collapseSlot();
                             }
                         }, 5000);
