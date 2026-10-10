@@ -262,6 +262,13 @@
     <!-- Header Navigation -->
     @include('components.header', ['categories' => $allCategories ?? []])
 
+    <!-- Top Header Ad Placement (On Home page, displayed right after Hero Blogs) -->
+    @if(!request()->routeIs('home'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-4">
+            <x-ad-banner placement="header" />
+        </div>
+    @endif
+
     <!-- Main Content Area -->
     <main class="flex-grow">
         @yield('content')
