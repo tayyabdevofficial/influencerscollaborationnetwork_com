@@ -2,9 +2,12 @@
 
 @php
     $enabled = $adsEnabled ?? false;
-    $adCode = ($enabled && isset($websiteAds[$placement]) && !empty(trim($websiteAds[$placement]))) 
+    $rawAdCode = ($enabled && isset($websiteAds[$placement]) && !empty(trim($websiteAds[$placement]))) 
         ? $websiteAds[$placement] 
         : null;
+
+    // Strip duplicate adsbygoogle.js library calls so the script is never downloaded multiple times on one page
+    $adCode = $rawAdCode ? preg_replace('#<script[^>]*src=["\'][^"\']*adsbygoogle\.js[^"\']*["\'][^>]*>\s*<\/script>#i', '', $rawAdCode) : null;
 @endphp
 
 @if($adCode)
