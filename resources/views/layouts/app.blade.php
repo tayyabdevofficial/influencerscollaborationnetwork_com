@@ -266,12 +266,22 @@
         })();
     </script>
 
-    <!-- Production Inlined CSS (Zero Render-Blocking Requests & Zero Layout Shift) -->
+    <!-- Production CSS (Graceful Inlined Fallback with Zero 500 Errors) -->
+    @php
+        $inlinedCss = null;
+        try {
+            $inlinedCss = \Illuminate\Support\Facades\Vite::content('resources/css/app.css');
+        } catch (\Throwable $e) {
+            $inlinedCss = null;
+        }
+    @endphp
     @if(file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        <style>{!! \Illuminate\Support\Facades\Vite::content('resources/css/app.css') !!}</style>
+    @elseif(!empty($inlinedCss))
+        <style>{!! $inlinedCss !!}</style>
         @vite('resources/js/app.js')
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-[#080C14] dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col transition-colors duration-300 selection:bg-[#DC2626] selection:text-white">
