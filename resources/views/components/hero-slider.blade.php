@@ -5,11 +5,9 @@
     <div class="relative w-full h-[380px] sm:h-[460px] lg:h-[500px]" id="slider-slides-container">
         @foreach($blogs as $index => $blog)
             @php
-                $rawHeroImage = $blog['image_1150x900'] ?? $blog['image_850x500'] ?? $blog['image_500x500'] ?? $blog['image_400x300'] ?? $blog['image'] ?? $blog['image_url'] ?? null;
-                $mainImage1150 = blogger_media_url(!empty($blog['image_1150x900']) ? $blog['image_1150x900'] : $rawHeroImage, '/images/placeholder.svg', 1150);
+                $rawHeroImage = $blog['image_850x500'] ?? $blog['image_1150x900'] ?? $blog['image_500x500'] ?? $blog['image_400x300'] ?? $blog['image'] ?? $blog['image_url'] ?? null;
                 $mainImage850  = blogger_media_url(!empty($blog['image_850x500']) ? $blog['image_850x500'] : $rawHeroImage, '/images/placeholder.svg', 850);
                 $mainImage500  = blogger_media_url(!empty($blog['image_500x500']) ? $blog['image_500x500'] : (!empty($blog['image_400x300']) ? $blog['image_400x300'] : $rawHeroImage), '/images/placeholder.svg', 500);
-                $imageUrl = $mainImage500;
                 $categoryName = $blog['category']['name'] ?? $blog['category_name'] ?? 'Spotlight';
                 $slug = $blog['slug'] ?? '#';
                 $title = $blog['title'] ?? '';
@@ -19,11 +17,9 @@
             <div class="slider-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}">
                 <picture class="absolute inset-0 w-full h-full">
                     <source media="(max-width: 640px)" srcset="{{ $mainImage500 }}">
-                    <source media="(max-width: 1024px)" srcset="{{ $mainImage850 }}">
-                    <img src="{{ $mainImage500 }}" 
+                    <img src="{{ $mainImage850 }}" 
                          alt="{{ $title }}" 
-                         @if($index === 0) fetchpriority="high" @else loading="lazy" @endif 
-                         decoding="async" 
+                         @if($index === 0) fetchpriority="high" @else loading="lazy" decoding="async" @endif 
                          width="1150" 
                          height="500" 
                          class="w-full h-full object-cover">
