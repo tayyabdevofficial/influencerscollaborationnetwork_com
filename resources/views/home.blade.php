@@ -11,9 +11,10 @@
             <x-hero-slider :blogs="$headerSliderBlogs" />
         @endif
 
-        <!-- Ad Placement Top (Rendered after Hero Blogs) -->
-        <x-ad-banner placement="header" />
-        <x-ad-banner placement="home_top" />
+        <!-- Top Header Ad Placement (Rendered after Hero Blogs) -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-4">
+            <x-ad-banner placement="header" />
+        </div>
 
         <!-- Featured Creator Spotlights & Leaderboard Section -->
         <section class="space-y-6">

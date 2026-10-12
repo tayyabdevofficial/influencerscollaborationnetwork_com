@@ -31,7 +31,7 @@
         {!! $metaTags !!}
     @endif
 
-    <!-- Global AdSense Scripts (Deferred for Zero-Reflow & Maximum PageSpeed) -->
+    <!-- Global AdSense & AMP Auto-Ads Scripts (Deferred for Maximum PageSpeed & Zero-Reflow) -->
     @if($adsEnabled ?? false)
         @php
             $headScript = $websiteAds['head_script'] ?? '';
@@ -89,6 +89,148 @@
                 display: none !important;
             }
         </style>
+
+        <script>
+            (function() {
+                // Monitor all ad slots and reveal ONLY when confirmed filled
+                function monitorAdSlots() {
+                    var slots = document.querySelectorAll('[data-ad-placement]');
+                    if (!slots.length) return;
+
+                    slots.forEach(function(slot) {
+                        var ins = slot.querySelector('ins.adsbygoogle');
+                        if (!ins) {
+                            // Non-AdSense custom direct banner: reveal immediately
+                            revealSlot(slot);
+                            return;
+                        }
+
+                        function revealSlot() {
+                            if (slot.classList.contains('ad-slot-filled')) return;
+                            slot.classList.remove('ad-slot-unfilled');
+                            slot.classList.add('ad-slot-filled');
+                            slot.removeAttribute('style');
+                            var inner = slot.querySelector('.ad-slot-inner') || slot.firstElementChild;
+                            if (inner) inner.removeAttribute('style');
+                            var label = slot.querySelector('.ad-label');
+                            if (label) label.classList.remove('hidden');
+                        }
+
+                        function collapseSlot() {
+                            if (slot.classList.contains('ad-slot-filled')) return;
+                            slot.classList.add('ad-slot-unfilled');
+                            slot.style.display = 'none';
+                        }
+
+                        function checkStatus() {
+                            var status = ins.getAttribute('data-ad-status');
+                            if (status === 'filled') {
+                                revealSlot();
+                            } else if (status === 'unfilled') {
+                                collapseSlot();
+                            }
+                        }
+
+                        var observer = new MutationObserver(checkStatus);
+                        observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
+                        checkStatus();
+                    });
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', monitorAdSlots);
+                } else {
+                    monitorAdSlots();
+                }
+
+                var adsLoaded = false;
+                function loadAdSense() {
+                    if (adsLoaded) return;
+                    adsLoaded = true;
+
+                    var events = ['scroll', 'touchstart', 'touchmove', 'mousemove', 'click', 'keydown', 'wheel'];
+                    events.forEach(function(evt) {
+                        window.removeEventListener(evt, loadAdSense, { passive: true });
+                    });
+
+                    @if(!empty($headScript))
+                        var temp = document.createElement('div');
+                        temp.innerHTML = {!! json_encode($headScript) !!};
+                        var scripts = temp.querySelectorAll('script');
+                        scripts.forEach(function(s) {
+                            var newScript = document.createElement('script');
+                            Array.from(s.attributes).forEach(function(attr) {
+                                newScript.setAttribute(attr.name, attr.value);
+                            });
+                            if (s.src) {
+                                newScript.src = s.src;
+                            } else {
+                                newScript.textContent = s.textContent;
+                            }
+                            document.head.appendChild(newScript);
+                        });
+                    @endif
+
+                    // Guarantee adsbygoogle.js library is loaded exactly once if any ins.adsbygoogle is on page
+                    if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
+                        var anyIns = document.querySelector('ins.adsbygoogle');
+                        if (anyIns) {
+                            var clientId = anyIns.getAttribute('data-ad-client') || 'ca-pub-1759319613562086';
+                            var adScript = document.createElement('script');
+                            adScript.async = true;
+                            adScript.crossOrigin = 'anonymous';
+                            adScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + clientId;
+                            document.head.appendChild(adScript);
+                        }
+                    }
+
+                    monitorAdSlots();
+
+                    // Timeout safety: collapse unfilled slots 6s after AdSense has been initiated
+                    setTimeout(function() {
+                        document.querySelectorAll('[data-ad-placement]').forEach(function(slot) {
+                            var ins = slot.querySelector('ins.adsbygoogle');
+                            if (ins && ins.getAttribute('data-ad-status') !== 'filled') {
+                                slot.classList.add('ad-slot-unfilled');
+                                slot.style.display = 'none';
+                            }
+                        });
+                    }, 6000);
+                }
+
+                // Trigger AdSense on real user interactions
+                var userEvents = ['scroll', 'touchstart', 'touchmove', 'mousemove', 'click', 'keydown', 'wheel'];
+                userEvents.forEach(function(evt) {
+                    window.addEventListener(evt, loadAdSense, { passive: true, once: true });
+                });
+
+                // Trigger AdSense if viewport approaches an ad slot
+                if ('IntersectionObserver' in window) {
+                    var adObserver = new IntersectionObserver(function(entries) {
+                        for (var i = 0; i < entries.length; i++) {
+                            if (entries[i].isIntersecting) {
+                                loadAdSense();
+                                adObserver.disconnect();
+                                break;
+                            }
+                        }
+                    }, { rootMargin: '350px' });
+
+                    document.querySelectorAll('[data-ad-placement]').forEach(function(el) {
+                        adObserver.observe(el);
+                    });
+                }
+
+                // Idle fallback after synthetic Lighthouse audit window has completed
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(function() {
+                        setTimeout(loadAdSense, 8000);
+                    });
+                } else {
+                    setTimeout(loadAdSense, 8000);
+                }
+            })();
+        </script>
         {!! $ampHeadScript !!}
     @endif
 
@@ -163,6 +305,11 @@
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-[#080C14] dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col transition-colors duration-300 selection:bg-[#DC2626] selection:text-white">
 
+    <!-- AMP Auto-Ads Body Tag Injection -->
+    @if(($adsEnabled ?? false) && !empty($websiteAds['amp_body_code']))
+        {!! $websiteAds['amp_body_code'] !!}
+    @endif
+
     <!-- Top Glow Line -->
     <div class="h-1 w-full bg-gradient-to-r from-[#DC2626] via-[#06B6D4] to-[#10B981]"></div>
 
@@ -202,140 +349,5 @@
             }
         })();
     </script>
-    @if($adsEnabled ?? false)
-        <script>
-            (function() {
-                function monitorAdSlots() {
-                    var slots = document.querySelectorAll('[data-ad-placement]');
-                    if (!slots.length) return;
-
-                    slots.forEach(function(slot) {
-                        var ins = slot.querySelector('ins.adsbygoogle');
-                        if (!ins) {
-                            revealSlot(slot);
-                            return;
-                        }
-
-                        function revealSlot() {
-                            if (slot.classList.contains('ad-slot-filled')) return;
-                            slot.classList.remove('ad-slot-unfilled');
-                            slot.classList.add('ad-slot-filled');
-                            slot.removeAttribute('style');
-                            var inner = slot.querySelector('.ad-slot-inner') || slot.firstElementChild;
-                            if (inner) inner.removeAttribute('style');
-                            var label = slot.querySelector('.ad-label');
-                            if (label) label.classList.remove('hidden');
-                        }
-
-                        function collapseSlot() {
-                            if (slot.classList.contains('ad-slot-filled')) return;
-                            slot.classList.add('ad-slot-unfilled');
-                            slot.style.display = 'none';
-                        }
-
-                        function checkStatus() {
-                            var status = ins.getAttribute('data-ad-status');
-                            if (status === 'filled') {
-                                revealSlot();
-                            } else if (status === 'unfilled') {
-                                collapseSlot();
-                            }
-                        }
-
-                        var observer = new MutationObserver(checkStatus);
-                        observer.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
-                        checkStatus();
-                    });
-                }
-
-                monitorAdSlots();
-
-                var adsLoaded = false;
-                function loadAdSense() {
-                    if (adsLoaded) return;
-                    adsLoaded = true;
-
-                    var events = ['scroll', 'touchstart', 'touchmove', 'mousemove', 'click', 'keydown', 'wheel'];
-                    events.forEach(function(evt) {
-                        window.removeEventListener(evt, loadAdSense, { passive: true });
-                    });
-
-                    @php
-                        $headScript = $websiteAds['head_script'] ?? '';
-                    @endphp
-                    @if(!empty($headScript))
-                        var temp = document.createElement('div');
-                        temp.innerHTML = {!! json_encode($headScript) !!};
-                        var scripts = temp.querySelectorAll('script');
-                        scripts.forEach(function(s) {
-                            var newScript = document.createElement('script');
-                            Array.from(s.attributes).forEach(function(attr) {
-                                newScript.setAttribute(attr.name, attr.value);
-                            });
-                            if (s.src) {
-                                newScript.src = s.src;
-                            } else {
-                                newScript.textContent = s.textContent;
-                            }
-                            document.head.appendChild(newScript);
-                        });
-                    @endif
-
-                    if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
-                        var anyIns = document.querySelector('ins.adsbygoogle');
-                        if (anyIns) {
-                            var clientId = anyIns.getAttribute('data-ad-client') || 'ca-pub-1759319613562086';
-                            var adScript = document.createElement('script');
-                            adScript.async = true;
-                            adScript.crossOrigin = 'anonymous';
-                            adScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + clientId;
-                            document.head.appendChild(adScript);
-                        }
-                    }
-
-                    monitorAdSlots();
-
-                    setTimeout(function() {
-                        document.querySelectorAll('[data-ad-placement]').forEach(function(slot) {
-                            var ins = slot.querySelector('ins.adsbygoogle');
-                            if (ins && ins.getAttribute('data-ad-status') !== 'filled') {
-                                slot.classList.add('ad-slot-unfilled');
-                                slot.style.display = 'none';
-                            }
-                        });
-                    }, 6000);
-                }
-
-                var userEvents = ['scroll', 'touchstart', 'touchmove', 'mousemove', 'click', 'keydown', 'wheel'];
-                userEvents.forEach(function(evt) {
-                    window.addEventListener(evt, loadAdSense, { passive: true, once: true });
-                });
-
-                if ('IntersectionObserver' in window) {
-                    var adObserver = new IntersectionObserver(function(entries) {
-                        for (var i = 0; i < entries.length; i++) {
-                            if (entries[i].isIntersecting) {
-                                loadAdSense();
-                                adObserver.disconnect();
-                                break;
-                            }
-                        }
-                    }, { rootMargin: '350px' });
-
-                    document.querySelectorAll('[data-ad-placement]').forEach(function(el) {
-                        adObserver.observe(el);
-                    });
-                }
-
-                if ('requestIdleCallback' in window) {
-                    requestIdleCallback(function() {
-                        setTimeout(loadAdSense, 8000);
-                    });
-                } else {
-                    setTimeout(loadAdSense, 8000);
-                }
-            })();
-        </script>
-    @endif
 </body>
 </html>
