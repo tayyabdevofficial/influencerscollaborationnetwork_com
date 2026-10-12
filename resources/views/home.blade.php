@@ -71,7 +71,7 @@
                                     $storyImg100 = blogger_media_url($storyRawImg, '/images/placeholder.svg', 100);
                                 @endphp
                                 <a href="{{ $storyUrl }}" class="flex items-center gap-3.5 group p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
-                                    <span aria-hidden="true" class="text-xl font-black text-slate-400 dark:text-slate-600 group-hover:text-[#DC2626] transition-colors shrink-0 w-6 text-center">
+                                    <span aria-hidden="true" class="text-xl font-black text-slate-600 dark:text-slate-400 group-hover:text-[#DC2626] transition-colors shrink-0 w-6 text-center">
                                         0{{ $index + 1 }}
                                     </span>
                                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">

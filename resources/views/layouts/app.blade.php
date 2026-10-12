@@ -13,8 +13,7 @@
             $lcpMobileUrl = blogger_media_url($lcpRawImg, '/images/placeholder.svg', 700);
             $lcpDesktopUrl = blogger_media_url(!empty($lcpHero['image_850x500']) ? $lcpHero['image_850x500'] : $lcpRawImg, '/images/placeholder.svg', 850);
         @endphp
-        <link rel="preload" as="image" href="{{ $lcpMobileUrl }}" media="(max-width: 640px)" fetchpriority="high">
-        <link rel="preload" as="image" href="{{ $lcpDesktopUrl }}" media="(min-width: 641px)" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ $lcpDesktopUrl }}" imagesrcset="{{ $lcpMobileUrl }} 700w, {{ $lcpDesktopUrl }} 850w" imagesizes="(max-width: 640px) 100vw, 850px" fetchpriority="high">
     @endif
 
     <style>
