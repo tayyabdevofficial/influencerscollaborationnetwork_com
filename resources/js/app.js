@@ -2,18 +2,7 @@
 window.toggleTheme = function () {
     const isDark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('icn_theme', isDark ? 'dark' : 'light');
-    updateThemeIcons();
 };
-
-function updateThemeIcons() {
-    const isDark = document.documentElement.classList.contains('dark');
-    document.querySelectorAll('.theme-sun-icon').forEach(el => {
-        el.style.display = isDark ? 'block' : 'none';
-    });
-    document.querySelectorAll('.theme-moon-icon').forEach(el => {
-        el.style.display = isDark ? 'none' : 'block';
-    });
-}
 
 // Auto update according to system if user has not set manual preference
 try {
@@ -24,7 +13,6 @@ try {
             } else {
                 document.documentElement.classList.remove('dark');
             }
-            updateThemeIcons();
         }
     });
 } catch (e) {}
@@ -248,11 +236,10 @@ function initTableOfContents() {
         }
     }, { passive: true });
 
-    updateActiveOnScroll();
+    window.requestAnimationFrame(updateActiveOnScroll);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateThemeIcons();
     initTableOfContents();
 
     // Search keyboard shortcut (Ctrl+K or Cmd+K)

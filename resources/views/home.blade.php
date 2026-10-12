@@ -53,7 +53,7 @@
                                     Creator Radar
                                 </h3>
                             </div>
-                            <span class="text-[11px] font-bold text-slate-400">Top Hits</span>
+                            <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">Top Hits</span>
                         </div>
 
                         <div class="space-y-4">
@@ -67,21 +67,31 @@
                                     $storyTitle = $story['title'] ?? '';
                                     $storyCat = $story['category']['name'] ?? 'Creator';
                                     $storyDate = blogger_format_date($story['published_at'] ?? null);
-                                    $storyImg = blogger_media_url($story['image_200x200'] ?? $story['image_url'] ?? null);
+                                    $storyRawImg = $story['image_200x200'] ?? $story['image_url'] ?? null;
+                                    $storyImg100 = blogger_media_url($storyRawImg, '/images/placeholder.svg', 100);
+                                    $storyImg200 = blogger_media_url($storyRawImg, '/images/placeholder.svg', 200);
                                 @endphp
                                 <a href="{{ $storyUrl }}" class="flex items-center gap-3.5 group p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
-                                    <span class="text-xl font-black text-slate-300 dark:text-slate-700 group-hover:text-[#DC2626] transition-colors shrink-0 w-6 text-center">
+                                    <span aria-hidden="true" class="text-xl font-black text-slate-400 dark:text-slate-600 group-hover:text-[#DC2626] transition-colors shrink-0 w-6 text-center">
                                         0{{ $index + 1 }}
                                     </span>
                                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">
-                                        <img src="{{ $storyImg }}" alt="{{ $storyTitle }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                        <img src="{{ $storyImg100 }}" 
+                                             srcset="{{ $storyImg100 }} 100w, {{ $storyImg200 }} 200w"
+                                             sizes="(max-width: 640px) 98px, 56px"
+                                             alt="{{ $storyTitle }}" 
+                                             width="56"
+                                             height="56"
+                                             loading="lazy"
+                                             decoding="async"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <span class="text-[10px] font-black uppercase tracking-wider text-[#DC2626] block">{{ $storyCat }}</span>
                                         <h4 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#06B6D4] transition-colors line-clamp-2 leading-snug">
                                             {{ $storyTitle }}
                                         </h4>
-                                        <span class="text-[10px] text-slate-400 mt-0.5 block">{{ $storyDate }}</span>
+                                        <span class="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 block">{{ $storyDate }}</span>
                                     </div>
                                 </a>
                             @endforeach
@@ -98,7 +108,7 @@
         <section class="space-y-6">
             <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                 <div>
-                    <span class="text-xs font-black uppercase tracking-widest text-[#06B6D4]">Fresh Drops</span>
+                    <span class="text-xs font-black uppercase tracking-widest text-cyan-700 dark:text-[#06B6D4]">Fresh Drops</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         Latest Insights &amp; Network Stories
                     </h2>

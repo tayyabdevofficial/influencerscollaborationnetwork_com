@@ -1,4 +1,4 @@
-<footer class="bg-slate-900 text-slate-400 dark:bg-[#05080E] border-t border-slate-800 transition-colors duration-300">
+<footer class="bg-slate-900 text-slate-300 dark:bg-[#05080E] border-t border-slate-800 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
 
@@ -7,14 +7,14 @@
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     <picture>
                         <source srcset="{{ asset('logo.webp') }}" type="image/webp">
-                        <img src="{{ asset('logo.png') }}" alt="{{ config('site.name') }}" width="40" height="40" loading="lazy" decoding="async" class="h-10 w-auto">
+                        <img src="{{ asset('logo.webp') }}" alt="" aria-hidden="true" width="40" height="40" loading="lazy" decoding="async" class="h-10 w-auto">
                     </picture>
                     <div>
                         <span class="font-extrabold text-white text-base tracking-tight block">Influencers Collaboration</span>
                         <span class="text-xs text-[#06B6D4] font-semibold uppercase tracking-wider block">Network</span>
                     </div>
                 </a>
-                <p class="text-sm text-slate-400 leading-relaxed max-w-sm">
+                <p class="text-sm text-slate-300 leading-relaxed max-w-sm">
                     The premier hub for content creators, viral influencers, digital media entrepreneurs, and cutting-edge collaborative growth stories.
                 </p>
                 <div class="flex items-center gap-3 pt-2">
@@ -29,10 +29,10 @@
 
             <!-- Quick Links -->
             <div class="space-y-3">
-                <h4 class="text-xs font-black uppercase tracking-widest text-white">Explore</h4>
+                <h3 class="text-xs font-black uppercase tracking-widest text-white">Explore</h3>
                 <ul class="space-y-2 text-sm font-medium">
                     <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Home Studio</a></li>
-                    <li><a href="{{ route('quizzes.index') }}" class="text-[#DC2626] hover:text-[#06B6D4] transition-colors font-bold">⚡ Creator Dares</a></li>
+                    <li><a href="{{ route('quizzes.index') }}" class="text-rose-400 hover:text-[#06B6D4] transition-colors font-bold">⚡ Creator Dares</a></li>
                     <li><a href="{{ route('blog.random') }}" class="hover:text-white transition-colors">Random Story</a></li>
                     <li><a href="{{ route('pages.about') }}" class="hover:text-white transition-colors">About Us</a></li>
                     <li><a href="{{ route('pages.contact') }}" class="hover:text-white transition-colors">Partner &amp; Collab</a></li>
@@ -41,7 +41,7 @@
 
             <!-- Legal & Trust -->
             <div class="space-y-3">
-                <h4 class="text-xs font-black uppercase tracking-widest text-white">Legal &amp; Trust</h4>
+                <h3 class="text-xs font-black uppercase tracking-widest text-white">Legal &amp; Trust</h3>
                 <ul class="space-y-2 text-sm font-medium">
                     <li><a href="{{ route('pages.privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
                     <li><a href="{{ route('pages.terms') }}" class="hover:text-white transition-colors">Terms of Service</a></li>
@@ -52,8 +52,8 @@
 
             <!-- Newsletter Callout -->
             <div class="space-y-4">
-                <h4 class="text-xs font-black uppercase tracking-widest text-white">Creator Briefing</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">
+                <h3 class="text-xs font-black uppercase tracking-widest text-white">Creator Briefing</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
                     Get weekly algorithm leaks, influencer sponsorship trends, and growth breakdowns straight to your inbox.
                 </p>
                 <div id="footer-newsletter-msg" class="hidden p-3 rounded-xl text-xs font-bold"></div>
@@ -111,7 +111,7 @@
 
         </div>
 
-        <div class="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div class="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-300">
             <div>
                 &copy; {{ date('Y') }} {{ config('site.name') }}. All rights reserved.
             </div>

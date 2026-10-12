@@ -20,7 +20,7 @@
                         </picture>
                         <div class="hidden sm:block">
                             <span class="text-[11px] font-black tracking-widest text-[#DC2626] uppercase block">Creator Network</span>
-                            <span class="text-[10px] font-bold text-slate-400 block -mt-0.5">Collab &amp; Influence</span>
+                            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 block -mt-0.5">Collab &amp; Influence</span>
                         </div>
                     </a>
                 </div>
@@ -122,7 +122,7 @@
         <!-- Drawer Header -->
         <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
             <a href="{{ route('home') }}" class="flex items-center" onclick="window.closeMobileNav()">
-                <img src="{{ asset('logo.png') }}" alt="{{ config('site.name') }}" class="h-8 w-auto object-contain">
+                <img src="{{ asset('logo.webp') }}" alt="{{ config('site.name') }}" width="32" height="32" class="h-8 w-auto object-contain">
             </a>
             <button type="button" 
                     onclick="window.closeMobileNav()" 
@@ -160,7 +160,7 @@
             </a>
 
             <div class="pt-2 pb-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3">Categories</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-3">Categories</span>
             </div>
 
             @foreach($categories ?? [] as $index => $category)

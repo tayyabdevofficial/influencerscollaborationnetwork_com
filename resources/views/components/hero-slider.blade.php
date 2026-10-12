@@ -7,20 +7,21 @@
             @php
                 $rawHeroImage = $blog['image_850x500'] ?? $blog['image_1150x900'] ?? $blog['image_500x500'] ?? $blog['image_400x300'] ?? $blog['image'] ?? $blog['image_url'] ?? null;
                 $mainImage850  = blogger_media_url(!empty($blog['image_850x500']) ? $blog['image_850x500'] : $rawHeroImage, '/images/placeholder.svg', 850);
-                $mainImage500  = blogger_media_url(!empty($blog['image_500x500']) ? $blog['image_500x500'] : (!empty($blog['image_400x300']) ? $blog['image_400x300'] : $rawHeroImage), '/images/placeholder.svg', 500);
+                $mainImage700  = blogger_media_url($rawHeroImage, '/images/placeholder.svg', 700);
                 $categoryName = $blog['category']['name'] ?? $blog['category_name'] ?? 'Spotlight';
                 $slug = $blog['slug'] ?? '#';
                 $title = $blog['title'] ?? '';
                 $date = blogger_format_date($blog['created_at'] ?? $blog['publish_date'] ?? now());
                 $viewsCount = $blog['views_count'] ?? (is_array($blog['views'] ?? null) ? count($blog['views']) : ($blog['views'] ?? 0));
             @endphp
-            <div class="slider-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}">
-                <picture class="absolute inset-0 w-full h-full">
-                    <source media="(max-width: 640px)" srcset="{{ $mainImage500 }}">
+            <div class="slider-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}" aria-hidden="{{ $index === 0 ? 'false' : 'true' }}">
+                <picture class="absolute inset-0 w-full h-full block">
+                    <source media="(max-width: 640px)" srcset="{{ $mainImage700 }}">
                     <img src="{{ $mainImage850 }}" 
                          alt="{{ $title }}" 
-                         @if($index === 0) fetchpriority="high" @else loading="lazy" decoding="async" @endif 
-                         width="1150" 
+                         @if($index === 0) fetchpriority="high" loading="eager" @else loading="lazy" @endif 
+                         decoding="async"
+                         width="850" 
                          height="500" 
                          class="w-full h-full object-cover">
                 </picture>
@@ -35,7 +36,7 @@
                         </span>
                         
                         <!-- Views Count Pill -->
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-white border border-white/10">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-black/75 text-white border border-white/10">
                             <svg class="w-3.5 h-3.5 text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -54,6 +55,7 @@
 
                     <div class="pt-2 flex items-center gap-4">
                         <a href="{{ route('blog.show', $slug) }}" 
+                           aria-label="Read Full Story: {{ $title }}"
                            class="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#DC2626] to-[#06B6D4] text-white font-extrabold text-xs sm:text-sm hover:scale-105 transition-all shadow-lg inline-flex items-center gap-2">
                             <span>Read Full Story</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -67,10 +69,10 @@
     <!-- Navigation Arrows -->
     @if(count($blogs) > 1)
         <div class="absolute bottom-6 right-6 z-30 flex items-center gap-2">
-            <button type="button" id="prev-slide-btn" aria-label="Previous story" class="w-10 h-10 rounded-2xl bg-black/60 hover:bg-[#DC2626] backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer">
+            <button type="button" id="prev-slide-btn" aria-label="Previous story" class="w-10 h-10 rounded-2xl bg-black/75 hover:bg-[#DC2626] text-white flex items-center justify-center transition-all cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button type="button" id="next-slide-btn" aria-label="Next story" class="w-10 h-10 rounded-2xl bg-black/60 hover:bg-[#06B6D4] backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer">
+            <button type="button" id="next-slide-btn" aria-label="Next story" class="w-10 h-10 rounded-2xl bg-black/75 hover:bg-[#06B6D4] text-white flex items-center justify-center transition-all cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
             </button>
         </div>
