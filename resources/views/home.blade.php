@@ -26,7 +26,7 @@
                     </h2>
                 </div>
                 <div class="hidden sm:flex items-center gap-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 dark:bg-red-950/60 text-[#DC2626] dark:text-red-400">
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">
                         🔥 Trending Now
                     </span>
                 </div>
