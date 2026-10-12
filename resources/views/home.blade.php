@@ -69,7 +69,6 @@
                                     $storyDate = blogger_format_date($story['published_at'] ?? null);
                                     $storyRawImg = $story['image_200x200'] ?? $story['image_url'] ?? null;
                                     $storyImg100 = blogger_media_url($storyRawImg, '/images/placeholder.svg', 100);
-                                    $storyImg200 = blogger_media_url($storyRawImg, '/images/placeholder.svg', 200);
                                 @endphp
                                 <a href="{{ $storyUrl }}" class="flex items-center gap-3.5 group p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                                     <span aria-hidden="true" class="text-xl font-black text-slate-400 dark:text-slate-600 group-hover:text-[#DC2626] transition-colors shrink-0 w-6 text-center">
@@ -77,8 +76,6 @@
                                     </span>
                                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">
                                         <img src="{{ $storyImg100 }}" 
-                                             srcset="{{ $storyImg100 }} 100w, {{ $storyImg200 }} 200w"
-                                             sizes="(max-width: 640px) 98px, 56px"
                                              alt="{{ $storyTitle }}" 
                                              width="56"
                                              height="56"

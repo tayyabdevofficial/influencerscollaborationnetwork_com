@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import { google } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -9,11 +9,12 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
             fonts: [
-                bunny('Plus Jakarta Sans', {
-                    weights: [400, 500, 600, 700, 800],
+                google('Plus Jakarta Sans', {
+                    weights: [400, 600, 700, 800],
                 }),
-                bunny('Outfit', {
-                    weights: [500, 600, 700, 800, 900],
+                google('Outfit', {
+                    weights: [600, 700, 800, 900],
+                    preload: false,
                 }),
             ],
         }),

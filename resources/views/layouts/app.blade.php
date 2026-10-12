@@ -127,6 +127,7 @@
         }
 
         $inlinedFontCss = null;
+        $primaryFontPreload = null;
         try {
             $fontsManifestPath = public_path('build/fonts-manifest.json');
             if (file_exists($fontsManifestPath)) {
@@ -134,11 +135,18 @@
                 if (!empty($fm['style']['file']) && file_exists(public_path('build/' . $fm['style']['file']))) {
                     $inlinedFontCss = file_get_contents(public_path('build/' . $fm['style']['file']));
                 }
+                if (!empty($fm['preloads'][0]['file']) && file_exists(public_path('build/' . $fm['preloads'][0]['file']))) {
+                    $primaryFontPreload = asset('build/' . $fm['preloads'][0]['file']);
+                }
             }
         } catch (\Throwable $e) {
             $inlinedFontCss = null;
+            $primaryFontPreload = null;
         }
     @endphp
+    @if(!empty($primaryFontPreload))
+        <link rel="preload" href="{{ $primaryFontPreload }}" as="font" type="font/woff2" crossorigin="anonymous">
+    @endif
     @if(file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @elseif(!empty($inlinedCss))

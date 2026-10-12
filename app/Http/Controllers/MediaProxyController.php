@@ -24,10 +24,10 @@ class MediaProxyController extends Controller
 
         $w = (int) $request->query('w', 0);
         $targetWidth = $w > 0 ? min(1200, max(50, $w)) : 650;
-        $quality = 65; // High-efficiency WebP compression meeting Google PageSpeed threshold
+        $quality = 55; // High-efficiency WebP compression meeting Google PageSpeed threshold
 
         $cacheDir = storage_path('app/public/blogger_media');
-        $cachePath = $cacheDir . '/' . md5($token . '_v6_w' . $targetWidth . '_q' . $quality) . '.webp';
+        $cachePath = $cacheDir . '/' . md5($token . '_v7_w' . $targetWidth . '_q' . $quality) . '.webp';
 
         // Check local cache on disk
         if (File::exists($cachePath)) {
