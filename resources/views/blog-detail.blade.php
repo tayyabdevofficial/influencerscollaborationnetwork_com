@@ -67,7 +67,7 @@
 
     <!-- Featured Cover Image Section -->
     <div class="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl bg-slate-950 aspect-[16/9] border border-slate-200 dark:border-slate-800">
-        <img src="{{ $imageUrl }}" alt="{{ $title }}" fetchpriority="high" decoding="async" width="1150" height="647" class="w-full h-full object-cover">
+        <img src="{{ $imageUrl }}" alt="{{ $title }}" fetchpriority="high" decoding="sync" width="1150" height="647" class="w-full h-full object-cover">
     </div>
 
     <!-- Top Article Ad Banner -->
@@ -79,7 +79,7 @@
         <!-- Left Share Bar (Desktop) -->
         <div class="lg:col-span-1 hidden lg:block">
             <div class="sticky top-28 flex flex-col items-center gap-3">
-                <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Share</span>
+                <span class="text-[10px] uppercase font-black text-slate-700 dark:text-slate-300 tracking-wider mb-1">Share</span>
 
                 <!-- WhatsApp -->
                 <a href="https://api.whatsapp.com/send?text={{ urlencode('🔥 Creator Insight: ' . $title . ' ' . url()->current()) }}" target="_blank" rel="noopener" class="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#25D366] hover:text-white transition-all" title="Share on WhatsApp" aria-label="Share on WhatsApp">

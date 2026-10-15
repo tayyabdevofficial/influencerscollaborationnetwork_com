@@ -77,6 +77,7 @@
                                     </span>
                                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">
                                         <img src="{{ $storyImg100 }}" 
+                                             srcset="{{ $storyImg100 }} 1x, {{ blogger_media_url($storyRawImg, '/images/placeholder.svg', 120) }} 2x"
                                              alt="" 
                                              aria-hidden="true"
                                              width="56"

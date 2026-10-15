@@ -1,29 +1,27 @@
 @props(['blogs' => []])
 
 @if(!empty($blogs) && count($blogs) > 0)
-<div class="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl" id="hero-slider">
-    <div class="relative w-full h-[380px] sm:h-[460px] lg:h-[500px]" id="slider-slides-container">
-        @foreach($blogs as $index => $blog)
-            @php
-                $rawHeroImage = $blog['image_850x500'] ?? $blog['image_1150x900'] ?? $blog['image_500x500'] ?? $blog['image_400x300'] ?? $blog['image'] ?? $blog['image_url'] ?? null;
-                $mainImage850  = blogger_media_url(!empty($blog['image_850x500']) ? $blog['image_850x500'] : $rawHeroImage, '/images/placeholder.svg', 850);
-                $mainImage700  = blogger_media_url($rawHeroImage, '/images/placeholder.svg', 700);
-                $categoryName = $blog['category']['name'] ?? $blog['category_name'] ?? 'Spotlight';
-                $slug = $blog['slug'] ?? '#';
-                $title = $blog['title'] ?? '';
-                $date = blogger_format_date($blog['created_at'] ?? $blog['publish_date'] ?? now());
-                $viewsCount = $blog['views_count'] ?? (is_array($blog['views'] ?? null) ? count($blog['views']) : ($blog['views'] ?? 0));
-            @endphp
-            <div class="slider-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}" aria-hidden="{{ $index === 0 ? 'false' : 'true' }}" @if($index !== 0) inert @endif>
-                <img src="{{ $mainImage850 }}" 
-                     srcset="{{ $mainImage700 }} 700w, {{ $mainImage850 }} 850w"
-                     sizes="(max-width: 640px) 100vw, 850px"
-                     alt="{{ $title }}" 
-                     @if($index === 0) fetchpriority="high" loading="eager" @else loading="lazy" @endif 
-                     decoding="async"
-                     width="850" 
-                     height="500" 
-                     class="w-full h-full object-cover">
+<div class="relative w-full h-[380px] sm:h-[460px] lg:h-[500px] overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl" id="hero-slider">
+    @foreach($blogs as $index => $blog)
+        @php
+            $rawHeroImage = $blog['image_850x500'] ?? $blog['image_1150x900'] ?? $blog['image_500x500'] ?? $blog['image_400x300'] ?? $blog['image'] ?? $blog['image_url'] ?? null;
+            $mainImage850  = blogger_media_url(!empty($blog['image_850x500']) ? $blog['image_850x500'] : $rawHeroImage, '/images/placeholder.svg', 850);
+            $mainImage700  = blogger_media_url($rawHeroImage, '/images/placeholder.svg', 700);
+            $categoryName = $blog['category']['name'] ?? $blog['category_name'] ?? 'Spotlight';
+            $slug = $blog['slug'] ?? '#';
+            $title = $blog['title'] ?? '';
+            $date = blogger_format_date($blog['created_at'] ?? $blog['publish_date'] ?? now());
+            $viewsCount = $blog['views_count'] ?? (is_array($blog['views'] ?? null) ? count($blog['views']) : ($blog['views'] ?? 0));
+        @endphp
+        <div class="slider-slide absolute inset-0 @if($index !== 0) transition-opacity duration-700 ease-in-out opacity-0 pointer-events-none z-0 @else opacity-100 z-10 @endif" data-slide="{{ $index }}" aria-hidden="{{ $index === 0 ? 'false' : 'true' }}" @if($index !== 0) inert @endif>
+            <img src="{{ $mainImage850 }}" 
+                 srcset="{{ $mainImage700 }} 700w, {{ $mainImage850 }} 850w"
+                 sizes="(max-width: 640px) 100vw, 850px"
+                 alt="{{ $title }}" 
+                 @if($index === 0) fetchpriority="high" loading="eager" decoding="sync" @else loading="lazy" decoding="async" @endif 
+                 width="850" 
+                 height="500" 
+                 class="w-full h-full object-cover">
                 <!-- Dual Legibility Scrims -->
                 <div class="absolute inset-0 bg-gradient-to-t from-[#080C14] via-[#080C14]/70 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-[#080C14]/90 via-[#080C14]/40 to-transparent"></div>
@@ -62,9 +60,8 @@
                         </a>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
+        </div>
+    @endforeach
 
     <!-- Navigation Arrows -->
     @if(count($blogs) > 1)

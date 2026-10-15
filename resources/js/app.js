@@ -141,11 +141,11 @@ function initTableOfContents() {
         a.textContent = heading.textContent.trim();
         a.dataset.targetId = id;
         
-        let indentClasses = 'pl-2.5 pr-2 font-medium text-slate-800 dark:text-slate-200 hover:text-[#DC2626] dark:hover:text-[#06B6D4]';
+        let indentClasses = 'pl-2.5 pr-2 font-semibold text-slate-800 dark:text-slate-200 hover:text-red-700 dark:hover:text-cyan-400';
         if (isH3) {
-            indentClasses = 'pl-5 pr-2 text-xs text-slate-700 dark:text-slate-300 hover:text-[#DC2626] dark:hover:text-[#06B6D4]';
+            indentClasses = 'pl-5 pr-2 text-xs text-slate-800 dark:text-slate-200 hover:text-red-700 dark:hover:text-cyan-400';
         } else if (isH4) {
-            indentClasses = 'pl-7 pr-2 text-[11px] text-slate-700 dark:text-slate-300 hover:text-[#DC2626] dark:hover:text-[#06B6D4]';
+            indentClasses = 'pl-7 pr-2 text-[11px] text-slate-800 dark:text-slate-200 hover:text-red-700 dark:hover:text-cyan-400';
         }
 
         a.className = `toc-link block py-1.5 transition-colors duration-150 text-xs sm:text-sm rounded-lg leading-snug ${indentClasses} line-clamp-2`;
@@ -194,15 +194,11 @@ function initTableOfContents() {
         items.forEach(({ id, link, isH3, isH4 }) => {
             if (id === activeId) {
                 activeLink = link;
-                link.classList.add('text-[#DC2626]', 'dark:text-[#06B6D4]', 'font-bold', 'bg-red-50', 'dark:bg-slate-800');
+                link.classList.add('text-red-800', 'dark:text-cyan-300', 'font-bold', 'bg-red-100/80', 'dark:bg-slate-800');
                 link.classList.remove('text-slate-700', 'text-slate-800', 'dark:text-slate-300', 'dark:text-slate-200');
             } else {
-                link.classList.remove('text-[#DC2626]', 'dark:text-[#06B6D4]', 'font-bold', 'bg-red-50', 'dark:bg-slate-800');
-                if (isH4 || isH3) {
-                    link.classList.add('text-slate-700', 'dark:text-slate-300');
-                } else {
-                    link.classList.add('text-slate-800', 'dark:text-slate-200');
-                }
+                link.classList.remove('text-red-800', 'dark:text-cyan-300', 'text-[#DC2626]', 'dark:text-[#06B6D4]', 'font-bold', 'bg-red-100/80', 'bg-red-50', 'dark:bg-slate-800');
+                link.classList.add('text-slate-800', 'dark:text-slate-200');
             }
         });
 

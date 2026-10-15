@@ -24,6 +24,31 @@
         @endif
     @endif
 
+    <!-- Preload Critical Self-Hosted Font for 0ms Discovery -->
+    @php
+        $inlinedFontCss = null;
+        $primaryFontPreload = null;
+        try {
+            $fontsManifestPath = public_path('build/fonts-manifest.json');
+            if (file_exists($fontsManifestPath)) {
+                $fm = json_decode(file_get_contents($fontsManifestPath), true);
+                if (!empty($fm['style']['file']) && file_exists(public_path('build/' . $fm['style']['file']))) {
+                    $inlinedFontCss = file_get_contents(public_path('build/' . $fm['style']['file']));
+                    $inlinedFontCss = preg_replace('/@font-face\s*\{[^}]*format\(["\']woff["\']\)[^}]*\}/is', '', $inlinedFontCss);
+                }
+                if (!empty($fm['preloads'][0]['file']) && file_exists(public_path('build/' . $fm['preloads'][0]['file']))) {
+                    $primaryFontPreload = asset('build/' . $fm['preloads'][0]['file']);
+                }
+            }
+        } catch (\Throwable $e) {
+            $inlinedFontCss = null;
+            $primaryFontPreload = null;
+        }
+    @endphp
+    @if(!empty($primaryFontPreload))
+        <link rel="preload" href="{{ $primaryFontPreload }}" as="font" type="font/woff2" crossorigin="anonymous">
+    @endif
+
     <style>
         /* Zero Non-Composited Animations Override */
         .shimmer-loading {
@@ -275,31 +300,6 @@
             $inlinedCss = null;
         }
 
-        $inlinedFontCss = null;
-        $primaryFontPreload = null;
-        try {
-            $fontsManifestPath = public_path('build/fonts-manifest.json');
-            if (file_exists($fontsManifestPath)) {
-                $fm = json_decode(file_get_contents($fontsManifestPath), true);
-                if (!empty($fm['style']['file']) && file_exists(public_path('build/' . $fm['style']['file']))) {
-                    $inlinedFontCss = file_get_contents(public_path('build/' . $fm['style']['file']));
-                }
-                if (!empty($fm['preloads'][0]['file']) && file_exists(public_path('build/' . $fm['preloads'][0]['file']))) {
-                    $primaryFontPreload = asset('build/' . $fm['preloads'][0]['file']);
-                }
-            }
-        } catch (\Throwable $e) {
-            $inlinedFontCss = null;
-            $primaryFontPreload = null;
-        }
-    @endphp
-    @if(!empty($primaryFontPreload))
-        <link rel="preload" href="{{ $primaryFontPreload }}" as="font" type="font/woff2" crossorigin="anonymous">
-    @endif
-    @php
-        if (!empty($inlinedFontCss)) {
-            $inlinedFontCss = preg_replace('/@font-face\s*\{[^}]*format\(["\']woff["\']\)[^}]*\}/is', '', $inlinedFontCss);
-        }
     @endphp
     @if(file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])

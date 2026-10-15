@@ -11,19 +11,24 @@ if (!function_exists('blogger_media_url')) {
             return asset($fallback);
         }
 
-        $query = $width ? '?w=' . $width : '';
+        // Check if rawPath contains /media/{token} (capture full token including base64 padding)
+        if (preg_match('#/media/([^?&]+)#', $rawPath, $matches)) {
+            $token = $matches[1];
+            $query = $width ? '?w=' . $width : '';
+            return url('/media/' . $token . $query);
+        }
 
-        // Check if rawPath contains a token (e.g. /media/{token}, /website/media/{token}, /api/v1/website/media/{token})
-        if (preg_match('#(?:^|/)media/([a-zA-Z0-9_\-\.]+)#', $rawPath, $matches)) {
-            return url('/media/' . $matches[1] . $query);
+        // If it's a full URL without /media/
+        if (str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) {
+            if ($width) {
+                return $rawPath . (str_contains($rawPath, '?') ? '&' : '?') . 'w=' . $width;
+            }
+            return $rawPath;
         }
 
         // If it's already just a raw token string
-        if (preg_match('/^[a-zA-Z0-9_\-\.]+$/', $rawPath) && !str_starts_with($rawPath, 'http')) {
-            return url('/media/' . $rawPath . $query);
-        }
-
-        return $rawPath;
+        $query = $width ? '?w=' . $width : '';
+        return url('/media/' . $rawPath . $query);
     }
 }
 
