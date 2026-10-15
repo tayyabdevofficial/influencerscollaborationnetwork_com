@@ -77,7 +77,8 @@
                                     </span>
                                     <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">
                                         <img src="{{ $storyImg100 }}" 
-                                             alt="{{ $storyTitle }}" 
+                                             alt="" 
+                                             aria-hidden="true"
                                              width="56"
                                              height="56"
                                              loading="lazy"
@@ -114,7 +115,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($recentBlogs as $blog)
+                @foreach(collect($recentBlogs)->take(6) as $blog)
                     <x-blog-card :blog="$blog" />
                 @endforeach
             </div>

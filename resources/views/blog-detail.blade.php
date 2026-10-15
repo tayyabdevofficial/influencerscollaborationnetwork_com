@@ -21,18 +21,18 @@
 <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-slate-400 flex-wrap font-medium">
-        <a href="{{ route('home') }}" class="hover:text-[#DC2626] transition-colors">Home</a>
+    <nav class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 flex-wrap font-medium">
+        <a href="{{ route('home') }}" class="text-slate-600 dark:text-slate-300 hover:text-[#DC2626] transition-colors">Home</a>
         <span>&rsaquo;</span>
         @if($categorySlug)
-            <a href="{{ route('category.show', $categorySlug) }}" class="hover:text-[#DC2626] transition-colors">{{ $category }}</a>
+            <a href="{{ route('category.show', $categorySlug) }}" class="text-slate-600 dark:text-slate-300 hover:text-[#DC2626] transition-colors">{{ $category }}</a>
             <span>&rsaquo;</span>
         @endif
         @if($subCategory && $subCategorySlug)
-            <a href="{{ route('subcategory.show', $subCategorySlug) }}" class="hover:text-[#DC2626] transition-colors">{{ $subCategory }}</a>
+            <a href="{{ route('subcategory.show', $subCategorySlug) }}" class="text-slate-600 dark:text-slate-300 hover:text-[#DC2626] transition-colors">{{ $subCategory }}</a>
             <span>&rsaquo;</span>
         @endif
-        <span class="text-slate-700 dark:text-slate-200 font-bold truncate max-w-xs sm:max-w-md">{{ $title }}</span>
+        <span class="text-slate-800 dark:text-slate-100 font-bold truncate max-w-xs sm:max-w-md">{{ $title }}</span>
     </nav>
 
     <!-- Header Section -->
@@ -53,12 +53,12 @@
             </p>
         @endif
 
-        <div class="flex items-center justify-center gap-4 text-xs sm:text-sm text-slate-400 pt-2 flex-wrap font-semibold">
+        <div class="flex items-center justify-center gap-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 pt-2 flex-wrap font-semibold">
             <span>{{ $publishedDate }}</span>
             @if($viewsCount > 0)
                 <span>&bull;</span>
-                <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <span class="flex items-center gap-1 text-slate-700 dark:text-slate-300">
+                    <svg class="w-4 h-4 text-cyan-700 dark:text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     {{ number_format($viewsCount) }} views
                 </span>
             @endif
@@ -114,10 +114,10 @@
             @endphp
             @if(!empty($tags))
                 <div class="pt-6 border-t border-slate-200 dark:border-slate-800">
-                    <span class="text-xs font-black uppercase tracking-wider text-slate-400 block mb-3">Keywords &amp; Niches:</span>
+                    <span class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-3">Keywords &amp; Niches:</span>
                     <div class="flex flex-wrap gap-2">
                         @foreach($tags as $tag)
-                            <a href="{{ route('search', ['q' => $tag]) }}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">
+                            <a href="{{ route('search', ['q' => $tag]) }}" aria-label="Search tag #{{ $tag }}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors">
                                 #{{ $tag }}
                             </a>
                         @endforeach
@@ -130,7 +130,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8 border-t border-slate-200 dark:border-slate-800">
                     @if(!empty($prevBlog))
                         <a href="{{ route('blog.show', $prevBlog['slug']) }}" class="p-5 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 hover:border-[#DC2626] transition-all group">
-                            <span class="text-[11px] font-black text-[#DC2626] uppercase tracking-wider block mb-1">&larr; Previous Story</span>
+                            <span class="text-[11px] font-black text-red-700 dark:text-red-400 uppercase tracking-wider block mb-1">&larr; Previous Story</span>
                             <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#DC2626] line-clamp-2">{{ $prevBlog['title'] }}</h4>
                         </a>
                     @else
@@ -139,7 +139,7 @@
 
                     @if(!empty($nextBlog))
                         <a href="{{ route('blog.show', $nextBlog['slug']) }}" class="p-5 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 hover:border-[#06B6D4] transition-all group sm:text-right">
-                            <span class="text-[11px] font-black text-[#06B6D4] uppercase tracking-wider block mb-1">Next Story &rarr;</span>
+                            <span class="text-[11px] font-black text-cyan-700 dark:text-[#06B6D4] uppercase tracking-wider block mb-1">Next Story &rarr;</span>
                             <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#06B6D4] line-clamp-2">{{ $nextBlog['title'] }}</h4>
                         </a>
                     @endif
@@ -215,7 +215,7 @@
                                 </p>
                             </div>
                         @empty
-                            <p id="no-comments-msg" class="text-xs text-slate-400 italic text-center py-6">Be the first creator to share your take on this story.</p>
+                            <p id="no-comments-msg" class="text-xs text-slate-600 dark:text-slate-400 italic text-center py-6">Be the first creator to share your take on this story.</p>
                         @endforelse
                     </div>
                 </section>
@@ -232,7 +232,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-[#DC2626] ring-4 ring-red-500/20"></span>
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">On This Page</h4>
                         </div>
-                        <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-[#DC2626] dark:text-[#06B6D4]">Quick Nav</span>
+                        <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200">Quick Nav</span>
                     </div>
                     <ul id="table-of-contents-list" class="space-y-1 max-h-[300px] overflow-y-auto scroll-smooth pr-1 text-sm border-l-2 border-slate-100 dark:border-slate-800 pl-2">
                         <!-- Dynamically generated TOC -->
@@ -256,7 +256,7 @@
             <!-- Related Stories -->
             @if(!empty($relatedBlogs) && count($relatedBlogs) > 0)
                 <div class="rounded-3xl bg-white dark:bg-[#0F172A] p-6 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest text-[#06B6D4] border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-cyan-700 dark:text-[#06B6D4] border-b border-slate-100 dark:border-slate-800 pb-2">
                         Related Reads
                     </h4>
                     <div class="space-y-4">
@@ -269,7 +269,7 @@
                             @endphp
                             <a href="{{ $relUrl }}" class="flex items-center gap-3 group">
                                 <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0">
-                                    <img src="{{ $relImg }}" alt="{{ $relTitle }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    <img src="{{ $relImg }}" alt="" aria-hidden="true" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <h5 class="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#DC2626] dark:group-hover:text-[#06B6D4] transition-colors line-clamp-2 leading-snug">
